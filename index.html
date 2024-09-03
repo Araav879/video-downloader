@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Video Downloader</h1>
+        <p>Paste your video URL below and choose the quality to download:</p>
+        <input type="text" id="videoUrl" placeholder="Enter video URL here" />
+        <select id="qualitySelect">
+            <option value="360p">360p</option>
+            <option value="480p">480p</option>
+            <option value="720p">720p</option>
+            <option value="1080p">1080p</option>
+        </select>
+        <button onclick="downloadVideo()">Download Video</button>
+        <div id="status" class="status"></div>
+        <div id="progress" class="progress-bar"></div>
+    </div>
+
+    <script>
+        async function downloadVideo() {
+            const url = document.getElementById('videoUrl').value;
+            const quality = document.getElementById('qualitySelect').value;
+
+            if (!url) {
+                document.getElementById('status').innerText = 'Please enter a video URL.';
+                return;
+            }
+
+            document.getElementById('status').innerText = 'Processing...';
+            document.getElementById('progress').style.width = '0%';
+            document.getElementById('progress').innerText = '0%';
+
+            try {
+                const response = await fetch(`/api/download?url=${encodeURIComponent(url)}&quality=${encodeURIComponent(quality)}`);
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('status').innerText = 'Download Complete!';
+                    document.getElementById('progress').style.width = '100%';
+                    document.getElementById('progress').innerText = '100%';
+                } else {
+                    document.getElementById('status').innerText = `Error: ${result.error}`;
+                    document.getElementById('progress').style.width = '0%';
+                }
+            } catch (error) {
+                document.getElementById('status').innerText = 'Error: Unable to reach the server.';
+                document.getElementById('progress').style.width = '0%';
+            }
+        }
+    </script>
+</body>
+</html>
